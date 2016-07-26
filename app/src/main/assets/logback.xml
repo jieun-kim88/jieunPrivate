@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <define name="filePath" class="com.example.naver.testtelephonyinfo.log.FilePathPropertyDefiner" />
+    <define name="fileLogLevel" class="com.example.naver.testtelephonyinfo.log.FileLogLevelPropertyDefiner" />
+    <define name="logcatLogLevel" class="com.example.naver.testtelephonyinfo.log.LogcatLogLevelPropertyDefiner" />
+
+    <appender name="LOGCAT" class="ch.qos.logback.classic.android.LogcatAppender">
+        <tagEncoder>
+            <pattern>%logger{0}</pattern>
+        </tagEncoder>
+        <encoder>
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="DEFAULT" class="com.example.naver.testtelephonyinfo.log.DefaultAppender">
+        <tagEncoder>
+            <pattern>%logger{0}</pattern>
+        </tagEncoder>
+        <encoder>
+            <pattern>%d{MM-dd HH:mm:ss} | %logger%n %msg%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${filePath}/logFile.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${filePath}/logFile.%d{yyyy-MM-dd, UTC}.log</fileNamePattern>
+
+            <!-- keep 30 days' worth of history -->
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>%d{MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{0} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="DEBUG">
+        <appender-ref ref="DEFAULT" />
+    </root>
+
+    <root level="${fileLogLevel}">
+        <appender-ref ref="FILE" />
+    </root>
+
+    <root level="${logcatLogLevel}">
+        <appender-ref ref="LOGCAT" />
+    </root>
+</configuration>

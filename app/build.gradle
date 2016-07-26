@@ -1,0 +1,42 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.3"
+
+    defaultConfig {
+        applicationId "com.example.naver.testtelephonyinfo"
+        minSdkVersion 16
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
+        multiDexEnabled true
+    }
+    dexOptions {
+        javaMaxHeapSize "4g"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    // Android supports
+    compile 'com.android.support:multidex:1.0.1'
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:appcompat-v7:23.4.0'
+    compile 'org.apache.commons:commons-lang3:3.4'
+    compile 'com.google.android.gms:play-services:9.0.2'
+    // log
+    compile 'org.slf4j:slf4j-api:1.7.9'
+    compile('com.github.tony19:logback-android-core:1.1.1-4') {
+        exclude group: 'commons-logging'
+    }
+    compile('com.github.tony19:logback-android-classic:1.1.1-4') {
+        exclude group: 'commons-logging'
+    }
+}
