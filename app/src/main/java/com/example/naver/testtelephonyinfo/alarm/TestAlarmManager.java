@@ -9,6 +9,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
+import android.os.PowerManager;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import com.example.naver.testtelephonyinfo.MainActivity;
@@ -22,12 +24,14 @@ public class TestAlarmManager extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		Log.d("test TestAlarmManager", "start service!!!!!!!!!!!!!!!!!!!!!!! ");
 		Log.d("test interval", "1m");
+		PowerManager.WakeLock wakeLock = acquireWakeLock();
+		Log.d("test TestAlarmManager", "start service and wakeLock ");
+
 		long interval = 60000L;
 		setTestIsWakeAlarmIfTaskKilled(interval);
 		notifyUnknownMessage(interval);
-
+		releaseWakeLock(wakeLock);
 		return super.onStartCommand(intent, flags, startId);
 	}
 
@@ -104,4 +108,24 @@ public class TestAlarmManager extends Service {
 		}
 
 	}
+
+	/**
+	 * we protect against the phone switching off while we're doing this by requesting a wake lock
+	 * - we request the minimum possible wake lock - just enough to keep the CPU running until we've finished
+	 */
+	@NonNull
+	private PowerManager.WakeLock acquireWakeLock() {
+		PowerManager pm = (PowerManager)getSystemService(POWER_SERVICE);
+		PowerManager.WakeLock result = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MQTT");
+		result.acquire();
+		return result;
+	}
+
+	/**
+	 * we're finished - if the phone is switched off, it's okay for the CPU to sleep now
+	 */
+	private void releaseWakeLock(PowerManager.WakeLock wakeLock) {
+		wakeLock.release();
+	}
+
 }
