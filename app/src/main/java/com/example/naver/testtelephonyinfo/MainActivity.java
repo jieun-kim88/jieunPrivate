@@ -7,15 +7,19 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import com.example.naver.testtelephonyinfo.alarm.TestAlarmManager;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
 	public static final String SEPARATOR = "---------------------------------";
+	public static final String LONG_SEPARATOR = "------------------------------------------------------------------";
+
 	private Button btn_get;
 	private Button btn_clear;
 	private TextView txt_info;
@@ -26,6 +30,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		Intent intent = new Intent(TestApplication.getAppContext(), TestAlarmManager.class);
+		intent.setPackage("com.example.naver.testtelephonyinfo");
+		startService(intent);
 		findViews();
 
 	}
@@ -42,6 +49,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	public void onClick(View v) {
 		switch (v.getId()) {
 			case R.id.btn_get:
+				teleInfo = StringUtils.join(StringUtils.LF, LONG_SEPARATOR, StringUtils.LF, teleInfo);
+
 				// 현재시간을 msec 으로 구한다.
 				long now = System.currentTimeMillis();
 				// 현재시간을 date 변수에 저장한다.
@@ -51,14 +60,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				// nowDate 변수에 값을 저장한다.
 				String formatDate = sdfNow.format(date);
 				teleInfo = StringUtils
-					.join(teleInfo, formatDate, SEPARATOR, StringUtils.LF
-						, InfoMessageHelper.TM_NETWORK_TAG, InfoMessageHelper.getTelephonyNetworkInfo(), StringUtils.LF,
-						InfoMessageHelper.TM_SIM_TAG, InfoMessageHelper.getTelephonySimInfo(), StringUtils.LF,
-						InfoMessageHelper.TM_ROMMING_TAG, InfoMessageHelper.getRomingInfo(), StringUtils.LF,
-						InfoMessageHelper.TM_DATE_STATE_TAG, InfoMessageHelper.getDataState(), StringUtils.LF,
-						InfoMessageHelper.GG_SERVICE_TAG, InfoMessageHelper.getStateOfAvailableGooglePlayService(),
-						StringUtils.LF);
-				teleInfo = StringUtils.join(teleInfo, SEPARATOR, StringUtils.LF);
+					.join(formatDate, SEPARATOR, StringUtils.LF
+						, InfoMessageHelper.TM_NETWORK_TAG, StringUtils.LF, InfoMessageHelper.getTelephonyNetworkInfo(),
+						StringUtils.LF,
+						InfoMessageHelper.TM_SIM_TAG, StringUtils.LF, InfoMessageHelper.getTelephonySimInfo(),
+						StringUtils.LF,
+						InfoMessageHelper.TM_ROMMING_TAG, StringUtils.LF, InfoMessageHelper.getRomingInfo(),
+						StringUtils.LF,
+						InfoMessageHelper.TM_DATE_STATE_TAG, StringUtils.LF, InfoMessageHelper.getDataState(),
+						StringUtils.LF,
+						InfoMessageHelper.GG_SERVICE_TAG, StringUtils.LF,
+						InfoMessageHelper.getStateOfAvailableGooglePlayService(),
+						StringUtils.LF,
+						InfoMessageHelper.CONNECTED_WIFI_TAG, StringUtils.SPACE,
+						InfoMessageHelper.getConnectedWIFIinfo(), teleInfo);
 				txt_info.setText(teleInfo);
 				LOG.debug(teleInfo);
 				LOG.debug("", SEPARATOR);
